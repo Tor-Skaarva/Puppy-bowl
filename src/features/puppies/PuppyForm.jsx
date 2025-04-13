@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useAddPuppyMutation } from "./puppySlice";
+import { useNavigate } from "react-router-dom";
 
 /**
  * @component
@@ -7,15 +9,22 @@ import { useState } from "react";
 export default function PuppyForm() {
   const [name, setName] = useState("");
   const [breed, setBreed] = useState("");
+  const [addPuppy] = useAddPuppyMutation();
+  const navigate = useNavigate();
 
-  // TODO: Use the `addPuppy` mutation to add a puppy when the form is submitted
+  // Placeholder image
+  const imageUrl = "https://loremflickr.com/200/300/dog";
 
-  function postPuppy(event) {
+  const postPuppy = async (event) => {
     event.preventDefault();
-
-    // Placeholder image w/ random photos of dogs
-    const imageUrl = "https://loremflickr.com/200/300/dog";
-  }
+    try {
+      const data = await addPuppy({ name, breed, imageUrl }).unwrap();
+      console.log("Puppy added:", data);
+      navigate("/");
+    } catch (error) {
+      console.error("Failed to add puppy:", error);
+    }
+  };
 
   return (
     <>
@@ -37,9 +46,7 @@ export default function PuppyForm() {
             onChange={(e) => setBreed(e.target.value)}
           />
         </label>
-        <button>Add to Roster</button>
-        {isLoading && <output>Uploading puppy information...</output>}
-        {error && <output>{error.message}</output>}
+        <button type="submit">Add to Roster</button>
       </form>
     </>
   );

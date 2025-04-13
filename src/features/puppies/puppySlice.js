@@ -15,8 +15,47 @@ functions for each endpoint.
 */
 
 const puppyApi = api.injectEndpoints({
-  endpoints: (build) => ({}),
+  endpoints: (builder) => ({
+    getPuppies: builder.query({
+      query: () => ({
+        url: "/players",
+        method: "GET",
+      }),
+      provideTags: ["Puppies"],
+    }),
+
+    getPuppy: builder.query({
+      query: (id) => ({
+        url: `/players/${id}`,
+        method: "GET",
+      }),
+      provideTags: ["Puppy"],
+      transformResponse: (response) => response.data.player,
+      transformErrorResponse: (response) => response.error.message.player,
+    }),
+
+    addPuppy: builder.mutation({
+      query: ({ name, breed }) => ({
+        url: "/players",
+        method: "POST",
+        body: {
+          name,
+          breed,
+        },
+      }),
+      invalidateTags: ["Puppy"],
+    }),
+
+    deletePuppy: builder.mutation({
+      query: (id) => ({
+        url: `/players/${id}`,
+        method: "DELETE",
+      }),
+      invalidateTags: ["Puppy"],
+    }),
+  }),
 });
+export default puppyApi;
 
 export const {
   useGetPuppiesQuery,
